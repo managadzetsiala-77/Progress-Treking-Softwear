@@ -1,23 +1,43 @@
-import { useQuery } from "@tanstack/react-query";
-import { getData } from "./services/appApi";
+
 import EmployeForm from "./feutures/employees/EmployeForm";
-import { statusesEndpoint } from "./config/ApiConfig";
+import { Route, Routes } from "react-router-dom";
+import Home from "./page/Home";
+import TaskDetail from "./page/TaskDetail";
+import CreateTask from "./page/CreateTask";
+import { useState } from "react";
+import AppHeader from "./shared/AppHeader";
+import { set } from "react-hook-form";
 
 export default function App() {
-  const {
-    data: statuses,
-    error,
-    isPending,
-  } = useQuery({
-    queryKey: ["statuses"],
-    queryFn: () => getData(statusesEndpoint),
-  });
-  console.log(statuses, error, isPending);
-  if (isPending) return "Loading";
-  if (error) return "An error has occurred" + error.message;
+  
+  // const {
+  //   data: statuses,
+  //   error,
+  //   isPending,
+  // } = useQuery({
+  //   queryKey: ["statuses"],
+  //   queryFn: () => getData(statusesEndpoint),
+  // });
+  // console.log(statuses, error, isPending);
+  // if (isPending) return "Loading";
+  // if (error) return "An error has occurred" + error.message;
+  
+  const [isOpenForm, setIsOpenForm] = useState(false);
+ function handleForm() {
+
+  setIsOpenForm((prev) => !prev);
+  
+ }
+  
   return (
     <div>
-      <EmployeForm />
+<AppHeader onHandleForm={handleForm} />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/taskdetails/:id" element={<TaskDetail />} />
+        <Route path="/createtask" element={<CreateTask />} />
+      </Routes>
+      {isOpenForm && <EmployeForm  onHandleForm={handleForm} />}
     </div>
   );
 }

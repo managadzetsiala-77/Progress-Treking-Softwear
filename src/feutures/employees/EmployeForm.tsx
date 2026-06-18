@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
-import { departmentsEndpoint } from "../../config/ApiConfig";
-import { getData } from "../../services/appApi";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { departmentsEndpoint, employeesEndpoint } from "../../config/ApiConfig";
+import { createData, getData } from "../../services/appApi";
 import type { TDepartment, TEmployee } from "../../app.types";
 import { useForm } from "react-hook-form";
 
@@ -8,24 +8,43 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { employeeSchema } from "../../validate/employeeSchema";
 import { formatEmployee } from "../../unils/employeeFormater";
 
-export default function EmployeForm() {
+export default function EmployeForm({onHandleForm}: {onHandleForm: () => void}) {
   const { data: departments } = useQuery({
     queryKey: ["departments"],
     queryFn: () => getData(departmentsEndpoint),
   });
   // console.log(departments);
+  //shemowmeba tu iqmneba 
+// const { data: employees } = useQuery({
+//     queryKey: ["employees"],
+//     queryFn: () => getData(employeesEndpoint),
+//   });
 
+//   console.log(employees);
   const {
     register,
     handleSubmit,
     watch,
     reset,
     formState: { errors },
-  } = useForm<TEmployee>({ resolver: yupResolver(employeeSchema) });
+  } = useForm({ resolver: yupResolver(employeeSchema) });
+
+  const mutation = useMutation({
+    mutationFn: (data: FormData) => createData(employeesEndpoint, data),
+    onSuccess: () => {
+      alert("Data has created !");
+      reset();
+      onHandleForm();
+    },
+    onError: () => {
+      alert("can`t create data!");
+    },
+  });
 
   function submit(data: TEmployee) {
     const formatedEmployee = formatEmployee(data);
-
+    mutation.mutate(formatedEmployee);
+    
     reset();
   }
 
@@ -33,15 +52,17 @@ export default function EmployeForm() {
 
   return (
     <>
-      <div className="w-screen h-screen bg-[rgba(0,0,0,0.1)] backdrop-blur-[5px] fixed flex justify-center items-center">
+      <div className="w-screen h-screen bg-[rgba(0,0,0,0.1)] backdrop-blur-[5px] fixed top-0 flex justify-center items-center" onClick={onHandleForm} >
         <form
           onSubmit={handleSubmit(submit)}
+          onClick={(e) => e.stopPropagation()}
           className="w-228.25 bg-white pt-10 px-12.5 pb-15 rounded-[10px]"
         >
           <img
             className="ml-auto cursor-pointer"
             src="images/Cancel.svg"
             alt="cencel icon"
+            onClick={onHandleForm}
           />
           <h2 className="self-stretch text-center justify-start text-neutral-800 text-3xl font-semibold font-['FiraGO'] mt-9.25 mb-11.25">
             თანამშრომლის დამატება
@@ -88,7 +109,7 @@ export default function EmployeForm() {
               >
                 ავატარი*
               </label>
-              <div className="h-30 p-2 flex justify-center items-center bg-amber-100 border border-dashed border-[#CED4DA] mt-2 rounded ">
+              <div className="h-30 p-2 flex justify-center items-center border border-dashed border-[#CED4DA] mt-2 rounded ">
                 {avatar?.[0] ? (
                   <div className="w-22 h-22 bg-gray-400 rounded-full overflow-hidden relative">
                     <img
@@ -153,6 +174,7 @@ export default function EmployeForm() {
             <button
               type="button"
               className="cursor-pointer border border-[#8338EC] py-2.5 px-4 rounded-[5px]  text-neutral-700 text-base font-normal font-['FiraGO']"
+              onClick={() => reset()}
             >
               გაუქმება
             </button>
