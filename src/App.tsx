@@ -2,8 +2,8 @@
 import EmployeForm from "./feutures/employees/EmployeForm";
 import { Route, Routes } from "react-router-dom";
 import Home from "./page/Home";
-import TaskDetail from "./page/TaskDetail";
-import CreateTask from "./page/CreateTask";
+import TaskDetail from "./feutures/taska/TaskDetail";
+import CreateTask from "./feutures/taska/CreateTask";
 import { useState } from "react";
 import AppHeader from "./shared/AppHeader";
 import { set } from "react-hook-form";
