@@ -21,7 +21,7 @@ export type TDepartment = {
   name: string;
 };
 export type TTask = {
-  id: number;
+  id?: number;
   name: string;
   description: string;
   due_date: string;
@@ -30,3 +30,13 @@ export type TTask = {
   department: TDepartment;
   employee:TEmployee;
 };
+export type TTaskForm = {
+  
+  name: string;
+  description: string;
+  due_date: string;
+  status_id:number;
+  priority_id: number;
+  employee_id:number;
+};
+

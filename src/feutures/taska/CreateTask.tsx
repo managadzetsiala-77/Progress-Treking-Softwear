@@ -1,12 +1,31 @@
 import { useForm } from "react-hook-form";
-import type { TDepartment, TEmployee, TPriority, Tstatus, TTask } from "../../app.types";
+import type {
+  TDepartment,
+  TEmployee,
+  TPriority,
+  Tstatus,
+  TTask,
+  TTaskForm,
+} from "../../app.types";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { taskSchema } from "../../validate/taskSchema";
-import { useQueries, useQuery } from "@tanstack/react-query";
-import { getData } from "../../services/appApi";
-import { departmentsEndpoint, employeesEndpoint, prioritiesEndpoint, statusesEndpoint } from "../../config/ApiConfig";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { createData, getData } from "../../services/appApi";
+import {
+  departmentsEndpoint,
+  employeesEndpoint,
+  prioritiesEndpoint,
+  statusesEndpoint,
+  tasksEndpoint,
+} from "../../config/ApiConfig";
+import { formatDate } from "../../unils/formatDate";
+import { useNavigate } from "react-router-dom";
+
 
 export default function CreateTask() {
+
+ const navigate = useNavigate()
+
   const { data: priorities } = useQuery({
     queryKey: ["priorities"],
     queryFn: () => getData(prioritiesEndpoint),
@@ -16,15 +35,15 @@ export default function CreateTask() {
     queryFn: () => getData(statusesEndpoint),
   });
 
-   const { data: departments } = useQuery({
-      queryKey: ["departments"],
-      queryFn: () => getData(departmentsEndpoint),
-    });
+  const { data: departments } = useQuery({
+    queryKey: ["departments"],
+    queryFn: () => getData(departmentsEndpoint),
+  });
 
-    const { data: employees } = useQuery({
-      queryKey: ["employees"],
-      queryFn: () => getData(employeesEndpoint),
-    });
+  const { data: employees } = useQuery({
+    queryKey: ["employees"],
+    queryFn: () => getData(employeesEndpoint),
+  });
 
   const {
     register,
@@ -35,17 +54,40 @@ export default function CreateTask() {
   } = useForm({ resolver: yupResolver(taskSchema) });
 
   const priorityId = watch("priority");
-const departmentId = watch("department");
+  const departmentId = watch("department");
 
   const img1 = priorities?.[0]["icon"];
   const img2 = priorities?.[1]["icon"];
   const img3 = priorities?.[2]["icon"];
 
-  console.log(img1);
+  // console.log(img1);
 
+  const mutation = useMutation({
+    mutationFn: (data: TTaskForm) => createData(tasksEndpoint, data),
+    onSuccess: () => {alert("new task created successfully");
+      reset()
+navigate("/")
+    },
+  onError: () => 
+    alert("Can`t create new Task, try again !!")
+  });
+    
   function submit(data: TTask) {
-    console.log(data);
+    
+    // console.log(data);
 
+    const newObj: TTaskForm = {
+      
+      name: data.name,
+      description: data.description,
+      due_date: formatDate(data.due_date),
+      status_id: +data.status,
+      priority_id: +data.priority,
+      employee_id: +data.employee,
+    };
+ console.log(newObj);
+ mutation.mutate(newObj)
+ 
     reset();
   }
 
@@ -56,10 +98,10 @@ const departmentId = watch("department");
       </h2>
 
       <form
-        className="grid grid-cols-1 lg:grid-cols-2 lg:gap-40.25"
+        className="grid grid-cols-1 lg:grid-cols-2 lg:gap-40.25 bg-[#FCFBFF] p-13.75 pb-30"
         onSubmit={handleSubmit(submit)}
       >
-        <section className="p-5 bg-green-100">
+        <section className="p-5 ">
           <label className="w-full flex flex-col font-medium" htmlFor="name">
             სათაური*
             <input
@@ -90,7 +132,7 @@ const departmentId = watch("department");
               </p>
             )}
           </label>
-          <div className="grid grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 ">
             <label
               htmlFor="priority"
               className="w-full relative flex flex-col font-medium"
@@ -134,7 +176,8 @@ const departmentId = watch("department");
             <label
               htmlFor="status"
               className="w-full flex flex-col font-medium"
-            >სტატუსი *
+            >
+              სტატუსი *
               <select
                 id="status"
                 defaultValue={""}
@@ -157,76 +200,86 @@ const departmentId = watch("department");
           </div>
         </section>
 
-        <section className="p-5 bg-amber-300">
-           <label className="flex flex-col items-start" htmlFor="departments">
-                        დეპარტამენტი*
-                        <select
-                          id="departments"
-                          {...register("department")}
-                          defaultValue={""}
-                          className="w-full border border-[#CED4DA] mt-0.75 p-2.5 outline-0 rounded "
-                        >
-                          <option value="" disabled>
-                            {" "}
-                            აირჩიე დაპარტამენტი
-                          </option>
-                          {departments?.map((department: TDepartment) => (
-                            <option key={department.id} value={department.id}>
-                              {department.name}
-                            </option>
-                          ))}
-                        </select>
-                        {errors.department && (
-                          <p className="font-normal text-red-500 text-[10px] mt-3 ">
-                            ✓ {errors.department ?.message}
-                          </p>
-                        )}
-                      </label>
-
-                        <label
-              htmlFor="employee"
-              className="w-full relative flex flex-col font-medium mt-17"
+        <section className="p-5 flex flex-col">
+          <label className="flex flex-col items-start" htmlFor="departments">
+            დეპარტამენტი*
+            <select
+              id="departments"
+              {...register("department")}
+              defaultValue={""}
+              className="w-full border border-[#CED4DA] mt-0.75 p-2.5 outline-0 rounded "
             >
-              პასუხისმგებელი თანამშრომელი *
-              {priorityId && (
-                <img
-                  className="w-6 absolute top-9 left-1"
-                  src={
-                    priorityId == "1"
-                      ? img1
-                      : priorityId == "2"
-                        ? img2
-                        : priorityId == "3"
-                          ? img3
-                          : ""
-                  }
-                  alt="icon"
-                />
-              )}
-              <select
-                id="employee"
-                defaultValue={""}
-                {...register("employee")}
-                className="w-full border border-[#CED4DA] mt-0.75 p-2.5 outline-0 rounded pl-8 "
-              >
-                <option value={""} disabled></option>
-                {employees?.filter((employee: TEmployee) => (
-+departmentId == employee.department_id
-                )).map((employee: TEmployee) => (
+              <option value="" disabled>
+                {" "}
+                აირჩიე დაპარტამენტი
+              </option>
+              {departments?.map((department: TDepartment) => (
+                <option key={department.id} value={department.id}>
+                  {department.name}
+                </option>
+              ))}
+            </select>
+            {errors.department && (
+              <p className="font-normal text-red-500 text-[10px] mt-3 ">
+                ✓ {errors.department?.message}
+              </p>
+            )}
+          </label>
+
+          <label
+            htmlFor="employee"
+            className="w-full relative flex flex-col font-medium mt-17"
+          >
+            პასუხისმგებელი თანამშრომელი *
+            <select
+              id="employee"
+              defaultValue={""}
+              {...register("employee")}
+              className="w-full border border-[#CED4DA] mt-0.75 p-2.5 outline-0 rounded  "
+            >
+              <option value={""} disabled></option>
+              {employees
+                ?.filter(
+                  (employee: TEmployee) =>
+                    +departmentId == employee.department_id,
+                )
+                .map((employee: TEmployee) => (
                   <option key={employee.id} value={employee.id}>
                     {employee.name}
                   </option>
-                ))}``````
-              </select>
-              {errors.employee && (
-                <p className="font-normal text-[10px] text-red-500">
-                  ✓ {errors.employee?.message}
-                </p>
-              )}
-            </label>
+                ))}
+              ``````
+            </select>
+            {errors.employee && (
+              <p className="font-normal text-[10px] text-red-500">
+                ✓ {errors.employee?.message}
+              </p>
+            )}
+          </label>
+
+          <label
+            htmlFor="due_date"
+            className="flex flex-col mt-auto py-17 lg:py-0"
+          >
+            {" "}
+            დედლაინი
+            <input
+              type="date"
+              id="due_date"
+              className="w-full lg:max-w-[50%]  border border-[#DEE2E6] rounded mt-2 outline-0 p-1"
+              {...register("due_date")}
+            />
+            {errors.due_date && (
+              <p className="font-normal text-[10px] text-red-500">
+                ✓ {errors.due_date?.message}
+              </p>
+            )}
+          </label>
         </section>
         <span></span>
-        <button className="ml-auto size- px-5 py-2.5 bg-violet-600 rounded-[5px] inline-flex justify-center items-center gap-1 text-white text-lg font-normal font-['FiraGO']">დავალების შექმნა</button>
+        <button className="ml-auto size- px-5 py-2.5 bg-violet-600 rounded-[5px] inline-flex justify-center items-center  text-white text-lg font-normal font-['FiraGO']">
+          დავალების შექმნა
+        </button>
       </form>
     </div>
   );
