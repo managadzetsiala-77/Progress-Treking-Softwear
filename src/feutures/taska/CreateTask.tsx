@@ -18,13 +18,11 @@ import {
   statusesEndpoint,
   tasksEndpoint,
 } from "../../config/ApiConfig";
-import { formatDate } from "../../unils/formatDate";
+import { formatDate } from "../../utils/formatDate";
 import { useNavigate } from "react-router-dom";
 
-
 export default function CreateTask() {
-
- const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const { data: priorities } = useQuery({
     queryKey: ["priorities"],
@@ -64,20 +62,18 @@ export default function CreateTask() {
 
   const mutation = useMutation({
     mutationFn: (data: TTaskForm) => createData(tasksEndpoint, data),
-    onSuccess: () => {alert("new task created successfully");
-      reset()
-navigate("/")
+    onSuccess: () => {
+      alert("new task created successfully");
+      reset();
+      navigate("/");
     },
-  onError: () => 
-    alert("Can`t create new Task, try again !!")
+    onError: () => alert("Can`t create new Task, try again !!"),
   });
-    
+
   function submit(data: TTask) {
-    
     // console.log(data);
 
     const newObj: TTaskForm = {
-      
       name: data.name,
       description: data.description,
       due_date: formatDate(data.due_date),
@@ -85,9 +81,9 @@ navigate("/")
       priority_id: +data.priority,
       employee_id: +data.employee,
     };
- console.log(newObj);
- mutation.mutate(newObj)
- 
+    console.log(newObj);
+    mutation.mutate(newObj);
+
     reset();
   }
 

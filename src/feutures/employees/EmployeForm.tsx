@@ -6,21 +6,25 @@ import { useForm } from "react-hook-form";
 
 import { yupResolver } from "@hookform/resolvers/yup";
 import { employeeSchema } from "../../validate/employeeSchema";
-import { formatEmployee } from "../../unils/employeeFormater";
+import { formatEmployee } from "../../utils/employeeFormater";
 
-export default function EmployeForm({onHandleForm}: {onHandleForm: () => void}) {
+export default function EmployeForm({
+  onHandleForm,
+}: {
+  onHandleForm: () => void;
+}) {
   const { data: departments } = useQuery({
     queryKey: ["departments"],
     queryFn: () => getData(departmentsEndpoint),
   });
   // console.log(departments);
-  //shemowmeba tu iqmneba 
-// const { data: employees } = useQuery({
-//     queryKey: ["employees"],
-//     queryFn: () => getData(employeesEndpoint),
-//   });
+  //shemowmeba tu iqmneba
+  // const { data: employees } = useQuery({
+  //     queryKey: ["employees"],
+  //     queryFn: () => getData(employeesEndpoint),
+  //   });
 
-//   console.log(employees);
+  //   console.log(employees);
   const {
     register,
     handleSubmit,
@@ -44,7 +48,7 @@ export default function EmployeForm({onHandleForm}: {onHandleForm: () => void}) 
   function submit(data: TEmployee) {
     const formatedEmployee = formatEmployee(data);
     mutation.mutate(formatedEmployee);
-    
+
     reset();
   }
 
@@ -52,7 +56,10 @@ export default function EmployeForm({onHandleForm}: {onHandleForm: () => void}) 
 
   return (
     <>
-      <div className="w-screen h-screen bg-[rgba(0,0,0,0.1)] backdrop-blur-[5px] fixed top-0 flex justify-center items-center" onClick={onHandleForm} >
+      <div
+        className="w-screen h-screen bg-[rgba(0,0,0,0.1)] backdrop-blur-[5px] fixed top-0 flex justify-center items-center"
+        onClick={onHandleForm}
+      >
         <form
           onSubmit={handleSubmit(submit)}
           onClick={(e) => e.stopPropagation()}

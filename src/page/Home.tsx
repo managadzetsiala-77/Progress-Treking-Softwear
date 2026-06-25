@@ -13,7 +13,7 @@ export default function Home() {
 console.log(tasks);
 
   return (
-    <div>
+    <div className="grid grid-cols-1 gap-13 p-10 lg:px-30  py-19.75 md:grid-cols-2 xl:grid-cols-4">
 
 
 <ToStartTasksList  tasks={tasks}/>
