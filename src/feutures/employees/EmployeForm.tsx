@@ -67,7 +67,7 @@ export default function EmployeForm({
         >
           <img
             className="ml-auto cursor-pointer"
-            src="images/Cancel.svg"
+            src="/images/Cancel.svg"
             alt="cencel icon"
             onClick={onHandleForm}
           />

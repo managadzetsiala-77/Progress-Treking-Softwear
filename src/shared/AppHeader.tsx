@@ -9,7 +9,7 @@ export default function AppHeader({
     <div>
       <header className="flex px-30 py-7.5 gap-10 items-center">
         <Link to={"/"} className=" mr-auto">
-          <img className="mr-auto" src="images/logo.svg" alt="" />
+          <img className="mr-auto" src="/images/logo.svg" alt="logo" />
         </Link>
 
         <button

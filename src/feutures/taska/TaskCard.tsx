@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import type { TTask } from "../../app.types";
 import { formatDateToGeo } from "../../utils/formatDate";
 import { formatDepartmentName } from "../../utils/formatName";
@@ -12,8 +13,12 @@ export default function TaskCard({
 }) {
 
   const {name: departmentName, color} = formatDepartmentName(task.department.id);
+
+const navigate =useNavigate()
+
   return (
     <div
+    onClick={() => navigate(`/taskdetails/${task.id}`)}
       className={`border ${borderColor} p-5 rounded -[15px] flex flex-col gap-7 w-95.25 h-57`}
     >
       <section className="flex gap-2.5 items-center text-[12px]">
@@ -26,7 +31,7 @@ export default function TaskCard({
 
       <section className="px-2.5">
         <h3 className="text -[15px] font-bold mb-3">{task.name} </h3>
-        <p className="text-[14px] font-normal">{task.description}</p>
+        <p className="text-[14px] font-normal">{task.description.substring(0, 50)}</p>
       </section>
 
       <section className="flex justify-end gap-1 items-center">

@@ -1,17 +1,40 @@
- export function formatDate(date: string): string {
-    const tepDate = new Date(date);
+export function formatDate(date: string): string {
+  const tepDate = new Date(date);
 
-    return `${tepDate.getFullYear()}-${tepDate.getMonth() < 10 ? "0" + (tepDate.getMonth() + 1) : tepDate.getMonth() + 1}-${tepDate.getDate() < 10 ? "0" + tepDate.getDate() : tepDate.getDate()}`;
-  }
-   export function formatDateToGeo(date: string): string {
-    
-    const tempDate = new Date(date)
-const monthes = ["დეკ", "იანვ", "თებ", "მარტ", "აპრ", "მაი", "ივნ", "ივლ", "აგვ", "სექ", "ოქტ", "ნოემ"]
+  return `${tepDate.getFullYear()}-${tepDate.getMonth() < 10 ? "0" + (tepDate.getMonth() + 1) : tepDate.getMonth() + 1}-${tepDate.getDate() < 10 ? "0" + tepDate.getDate() : tepDate.getDate()}`;
+}
+export function formatDateToGeo(date: string): string {
+  const tempDate = new Date(date);
+  const monthes = [
+    "დეკ",
+    "იანვ",
+    "თებ",
+    "მარტ",
+    "აპრ",
+    "მაი",
+    "ივნ",
+    "ივლ",
+    "აგვ",
+    "სექ",
+    "ოქტ",
+    "ნოემ",
+  ];
 
+  const day =
+    tempDate.getDate() < 10 ? "0" + tempDate.getDate() : tempDate.getDate();
+  const year = tempDate.getFullYear();
+  const month = tempDate.getMonth();
 
-    const day = tempDate.getDate() < 10 ? "0" + tempDate.getDate() : tempDate.getDate()
-    const year = tempDate.getFullYear()
-    const month = tempDate.getMonth()
+  return `${day} ${monthes[month]} ${year}`;
+}
+export function formatDateForDetail(date: string): string {
+  const weekDays = ["კვი", "ორშ", "სამშ", "ოთხშ", "ხუთშ", "პარ", "შაბ"];
+  const tempDate = new Date(date);
+  const day =
+    tempDate.getDate() < 10 ? "0" + tempDate.getDate() : tempDate.getDate();
+  const year = tempDate.getFullYear();
+  const month = tempDate.getMonth();
+  const weekDay = tempDate.getDay();
 
-    return `${day} ${monthes[month]} ${year}`
-   }
+  return `${weekDays[weekDay]} - ${day}/ ${month}/${year}`;
+}
